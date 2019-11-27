@@ -19,6 +19,16 @@ app = Flask(__name__)
 #################################################
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db/bellybutton.sqlite"
+# app.config["CACHE_TYPE"] = "null"
+
+# if app.config["DEBUG"]:
+#     @app.after_request
+#     def after_request(response):
+#         response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, public, max-age=0"
+#         response.headers["Expires"] = 0
+#         response.headers["Pragma"] = "no-cache"
+#         return response
+
 db = SQLAlchemy(app)
 
 # reflect an existing database into a new model
@@ -102,4 +112,4 @@ def samples(sample):
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)

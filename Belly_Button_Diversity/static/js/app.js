@@ -1,13 +1,30 @@
 function buildMetadata(sample) {
-
   // @TODO: Complete the following function that builds the metadata panel
-
   // Use `d3.json` to fetch the metadata for a sample
-    // Use d3 to select the panel with id of `#sample-metadata`
-
+  var url = `/metadata/${sample}`;
+  var response = d3.json(url);
+  
+  
+  // Use d3 to select the panel with id of `#sample-metadata`
+  var selector= d3.select("#sample-metadata");
+  
     // Use `.html("") to clear any existing metadata
+  selector.html("");
+  // {"AGE":24.0,"BBTYPE":"I","ETHNICITY":"Caucasian","GENDER":"F","LOCATION":"Beaufort/NC","WFREQ":2.0,"sample":940}
 
-    // Use `Object.entries` to add each key and value pair to the panel
+  // Use `Object.entries` to add each key and value pair to the panel
+  response.then((row) => {
+    Object.entries(row).forEach(([key, value]) => {
+      console.log(`key=${key} , value=${value}`);
+      selector
+        .append('h6')
+        .text(`${key} : ${value}`)
+
+    }
+    );
+   
+  });
+
     // Hint: Inside the loop, you will need to use d3 to append new
     // tags for each key-value in the metadata.
 
@@ -16,17 +33,48 @@ function buildMetadata(sample) {
 }
 
 function buildCharts(sample) {
-
   // @TODO: Use `d3.json` to fetch the sample data for the plots
-
-    // @TODO: Build a Bubble Chart using the sample data
-
+    url=`/samples/${sample}`;
+    response = d3.json(url);
+  
     // @TODO: Build a Pie Chart
+
+    response.then((samples)=>{
+     
+      var data1 = [{
+        values: samples.sample_values.slice(0,10),
+        labels: samples.otu_ids.slice(0,10),
+         hovertext: samples.otu_labels.slice(0,10),
+        type: 'pie'
+      }];   
+     Plotly.newPlot("pie", data1);
+  
+     // @TODO: Build a Buble Chart
+  
+     var data2 = [{
+      x: samples.otu_ids,
+      y: samples.sample_values,
+      text: samples.otu_labels,
+      mode:"markers",
+      marker: {
+        size: samples.sample_values,
+        // opacity: 0.3,
+        color: samples.otu_ids
+      }
+    }];   
+
+   Plotly.newPlot("bubble", data2);
+
+    });
+  
+    
+
+
     // HINT: You will need to use slice() to grab the top 10 sample_values,
     // otu_ids, and labels (10 each).
 }
 
-function init() {
+function init() { 
   // Grab a reference to the dropdown select element
   var selector = d3.select("#selDataset");
 
@@ -54,3 +102,4 @@ function optionChanged(newSample) {
 
 // Initialize the dashboard
 init();
+
